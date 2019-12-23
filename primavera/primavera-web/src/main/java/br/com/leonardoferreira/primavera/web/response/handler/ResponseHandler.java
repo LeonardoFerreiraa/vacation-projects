@@ -56,13 +56,14 @@ public class ResponseHandler {
     public void handleError(final HttpServletRequest request,
                             final HttpServletResponse response,
                             final Throwable error) {
-        final ResponseError responseError = AnnotationFinder.retrieveAnnotation(error.getClass(), ResponseError.class);
+        final Throwable cause = error.getCause();
+        final ResponseError responseError = AnnotationFinder.retrieveAnnotation(cause.getClass(), ResponseError.class);
         if (responseError == null) {
             error.printStackTrace();
             handleResponse(
                     request,
                     response,
-                    buildResponseEntity(request, HttpStatus.INTERNAL_SERVER_ERROR, error.getMessage())
+                    buildResponseEntity(request, HttpStatus.INTERNAL_SERVER_ERROR, cause.getMessage())
             );
         } else {
             handleResponse(

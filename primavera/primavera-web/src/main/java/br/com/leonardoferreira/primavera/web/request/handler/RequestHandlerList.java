@@ -2,16 +2,15 @@ package br.com.leonardoferreira.primavera.web.request.handler;
 
 import br.com.leonardoferreira.primavera.primavera.Primavera;
 import br.com.leonardoferreira.primavera.primavera.annotation.AnnotationFinder;
+import br.com.leonardoferreira.primavera.primavera.decorator.AbstractListDecorator;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
-public class RequestHandlerList {
-
-    private final Set<RequestHandlerMetadata> handlers;
+public class RequestHandlerList extends AbstractListDecorator<RequestHandlerMetadata> {
 
     public RequestHandlerList(final Primavera primavera) {
-        handlers = buildHandlers(primavera);
+        this.elements = buildHandlers(primavera);
     }
 
     private Set<RequestHandlerMetadata> buildHandlers(final Primavera primavera) {
@@ -23,10 +22,7 @@ public class RequestHandlerList {
     }
 
     public RequestHandlerMetadata findByRequest(final HttpServletRequest req) {
-        return handlers.stream()
-                .filter(handlerMetadata -> handlerMetadata.canHandle(req))
-                .findFirst()
-                .orElse(null);
+        return findFirst(handlerMetadata -> handlerMetadata.canHandle(req));
     }
 
 }

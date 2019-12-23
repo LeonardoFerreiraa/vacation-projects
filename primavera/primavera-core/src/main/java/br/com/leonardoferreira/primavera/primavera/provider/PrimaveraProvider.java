@@ -40,12 +40,13 @@ public abstract class PrimaveraProvider implements Primavera {
         ));
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T registerComponent(final ComponentMetaData<T> componentMetaData) {
-        if (components.hasComponent(componentMetaData)) {
+        if (components.has(componentMetaData)) {
             return retrieveComponent(componentMetaData.getType());
         }
 
-        return components.add(componentMetaData);
+        return (T) components.add(componentMetaData).getInstance();
     }
 
     @Override
