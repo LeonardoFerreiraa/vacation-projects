@@ -21,7 +21,7 @@ public class ResponseHandler {
         this.jsonParser = jsonParser;
     }
 
-    public void handleResponse(final Object object, final HttpServletResponse response) {
+    public void handleResponse(final HttpServletRequest request, final HttpServletResponse response, final Object object) {
         response.setContentType("application/json");
 
         Object body = object;
@@ -47,63 +47,42 @@ public class ResponseHandler {
 
     public void handleNotFound(final HttpServletRequest request, final HttpServletResponse response) {
         handleResponse(
-                ResponseEntity.builder()
-                        .status(HttpStatus.NOT_FOUND)
-                        .body(
-                                ResponseErrorEntity.builder()
-                                        .message("Resource Not Found")
-                                        .status(HttpStatus.NOT_FOUND)
-                                        .path(request.getPathInfo())
-                                        .timestamp(System.currentTimeMillis())
-                                        .statusCode(HttpStatus.NOT_FOUND.getStatusCode())
-                                        .build()
-                        )
-                        .build(),
-                response
+                request,
+                response,
+                buildResponseEntity(request, HttpStatus.NOT_FOUND, "Resource Not Found")
         );
     }
 
     public void handleError(final HttpServletRequest request,
                             final HttpServletResponse response,
                             final Throwable error) {
-        try {
-            final ResponseError responseError = AnnotationFinder.retrieveAnnotation(error.getClass(), ResponseError.class);
-            if (responseError == null) {
-                error.printStackTrace();
-                handleResponse(
-                        ResponseEntity.builder()
-                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .body(
-                                        ResponseErrorEntity.builder()
-                                                .message(error.getMessage())
-                                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                                .path(request.getPathInfo())
-                                                .timestamp(System.currentTimeMillis())
-                                                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.getStatusCode())
-                                                .build()
-                                )
-                                .build(),
-                        response
-                );
-            } else {
-                handleResponse(
-                        ResponseEntity.builder()
-                                .status(responseError.status())
-                                .body(
-                                        ResponseErrorEntity.builder()
-                                                .message(responseError.message())
-                                                .status(responseError.status())
-                                                .path(request.getPathInfo())
-                                                .timestamp(System.currentTimeMillis())
-                                                .statusCode(responseError.status().getStatusCode())
-                                                .build()
-                                )
-                                .build(),
-                        response
-                );
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        final ResponseError responseError = AnnotationFinder.retrieveAnnotation(error.getClass(), ResponseError.class);
+        if (responseError == null) {
+            error.printStackTrace();
+            handleResponse(
+                    request,
+                    response,
+                    buildResponseEntity(request, HttpStatus.INTERNAL_SERVER_ERROR, error.getMessage())
+            );
+        } else {
+            handleResponse(
+                    request,
+                    response,
+                    buildResponseEntity(request, responseError.status(), responseError.message())
+            );
         }
+    }
+
+    private ResponseEntity<Object> buildResponseEntity(final HttpServletRequest request, final HttpStatus status, final String message) {
+        return ResponseEntity.builder()
+                .status(status)
+                .body(ResponseErrorEntity.builder()
+                        .message(message)
+                        .status(status)
+                        .path(request.getPathInfo())
+                        .timestamp(System.currentTimeMillis())
+                        .statusCode(status.getStatusCode())
+                        .build())
+                .build();
     }
 }

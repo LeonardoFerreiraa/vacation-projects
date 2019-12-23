@@ -1,13 +1,12 @@
 package br.com.leonardoferreira.primavera.web.servlet;
 
 import br.com.leonardoferreira.primavera.primavera.Primavera;
+import br.com.leonardoferreira.primavera.primavera.functional.Outcome;
 import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerList;
 import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerMetadata;
 import br.com.leonardoferreira.primavera.web.resolver.MethodArgumentResolver;
 import br.com.leonardoferreira.primavera.web.response.handler.ResponseHandler;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,25 +34,12 @@ public class DispatcherServlet extends HttpServlet {
         if (requestHandlerMetadata == null) {
             responseHandler.handleNotFound(req, resp);
         } else {
-            handleRequest(requestHandlerMetadata, req, resp);
-        }
-    }
-
-    private void handleRequest(final RequestHandlerMetadata requestHandlerMetadata,
-                               final HttpServletRequest req,
-                               final HttpServletResponse resp) throws IOException {
-        try {
-            final Method method = requestHandlerMetadata.getMethod();
-
-            final Object[] args = Arrays.stream(method.getParameters())
-                    .map(parameter -> MethodArgumentResolver.resolve(req, resp, resolvers, parameter))
-                    .toArray();
-
-            final Object result = method.invoke(requestHandlerMetadata.getInstance(), args);
-
-            responseHandler.handleResponse(result, resp);
-        } catch (final Exception e) {
-            responseHandler.handleError(req, resp, e.getCause());
+            final Outcome<Object, Throwable> outcome = requestHandlerMetadata.handle(req, resp, resolvers);
+            if (outcome.hasError()) {
+                responseHandler.handleError(req, resp, outcome.getError());
+            } else {
+                responseHandler.handleResponse(req, resp, outcome.getResult());
+            }
         }
     }
 

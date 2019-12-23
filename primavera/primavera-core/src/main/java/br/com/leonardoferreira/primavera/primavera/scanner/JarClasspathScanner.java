@@ -22,10 +22,6 @@ class JarClasspathScanner implements ClasspathScanner {
 
     private final String packageName;
 
-    public JarClasspathScanner(final Class<?> baseClass) {
-        this(baseClass.getClassLoader(), baseClass.getPackageName());
-    }
-
     @Override
     public Set<Class<?>> scan() {
         try {

@@ -1,12 +1,9 @@
 package br.com.leonardoferreira.primavera.web.request.handler;
 
 import br.com.leonardoferreira.primavera.primavera.Primavera;
-import br.com.leonardoferreira.primavera.primavera.metadata.ComponentMetaData;
-import java.util.Arrays;
-import java.util.Objects;
+import br.com.leonardoferreira.primavera.primavera.annotation.AnnotationFinder;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 
 public class RequestHandlerList {
@@ -19,16 +16,10 @@ public class RequestHandlerList {
 
     private Set<RequestHandlerMetadata> buildHandlers(final Primavera primavera) {
         return primavera.components()
-                .stream()
-                .flatMap(this::buildHandlers)
+                .methods()
+                .filter(cm -> AnnotationFinder.isAnnotationPresent(cm.getMethod(), RequestHandler.class))
+                .map(cm -> RequestHandlerMetadata.newInstance(cm.getInstance(), cm.getMethod()))
                 .collect(Collectors.toSet());
-    }
-
-    private Stream<RequestHandlerMetadata> buildHandlers(final ComponentMetaData<?> component) {
-        final Object instance = component.getInstance();
-        return Arrays.stream(instance.getClass().getDeclaredMethods())
-                .map(method -> RequestHandlerMetadata.newInstance(instance, method))
-                .filter(Objects::nonNull);
     }
 
     public RequestHandlerMetadata findByRequest(final HttpServletRequest req) {

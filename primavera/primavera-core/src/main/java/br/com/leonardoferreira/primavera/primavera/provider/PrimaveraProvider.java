@@ -4,6 +4,7 @@ import br.com.leonardoferreira.primavera.primavera.Primavera;
 import br.com.leonardoferreira.primavera.primavera.annotation.AnnotationFinder;
 import br.com.leonardoferreira.primavera.primavera.decorator.ClassList;
 import br.com.leonardoferreira.primavera.primavera.decorator.ComponentList;
+import br.com.leonardoferreira.primavera.primavera.functional.Outcome;
 import br.com.leonardoferreira.primavera.primavera.metadata.ComponentMetaData;
 import br.com.leonardoferreira.primavera.primavera.scanner.ClasspathScanner;
 import br.com.leonardoferreira.primavera.primavera.stereotype.Component;
@@ -24,10 +25,10 @@ public abstract class PrimaveraProvider implements Primavera {
     @Override
     public void scan(final Class<?> baseClass) {
         this.classes.addAll(ClasspathScanner.scan(baseClass));
-        classes.forEach(
-                c -> AnnotationFinder.isAnnotationPresent(c, Component.class),
-                this::registerComponent
-        );
+
+        classes.stream()
+                .filter(c -> AnnotationFinder.isAnnotationPresent(c, Component.class))
+                .forEach(this::registerComponent);
     }
 
     @Override
@@ -72,9 +73,9 @@ public abstract class PrimaveraProvider implements Primavera {
         try {
             final Constructor<?>[] constructors = clazz.getConstructors();
             for (final Constructor<?> constructor : constructors) {
-                final T instance = resolve(constructor);
-                if (instance != null) {
-                    return instance;
+                final Outcome<T, Throwable> outcome = resolve(constructor);
+                if (outcome.hasResult()) {
+                    return outcome.getResult();
                 }
             }
 
@@ -85,17 +86,15 @@ public abstract class PrimaveraProvider implements Primavera {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T resolve(final Constructor<?> constructor) {
-        try {
+    protected <T> Outcome<T, Throwable> resolve(final Constructor<?> constructor) {
+        return Outcome.from(() -> {
             var parameters = Arrays.stream(constructor.getParameterTypes())
                     .map(this::findClass)
                     .filter(Objects::nonNull)
                     .toArray();
 
             return (T) constructor.newInstance(parameters);
-        } catch (Exception e) {
-            return null;
-        }
+        });
     }
 
     protected Object findClass(final Class<?> type) {

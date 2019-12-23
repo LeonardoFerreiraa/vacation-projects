@@ -1,9 +1,14 @@
 package br.com.leonardoferreira.primavera.web.request.handler;
 
 import br.com.leonardoferreira.primavera.primavera.annotation.AnnotationFinder;
+import br.com.leonardoferreira.primavera.primavera.functional.Outcome;
 import br.com.leonardoferreira.primavera.web.request.RequestMethod;
+import br.com.leonardoferreira.primavera.web.resolver.MethodArgumentResolver;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -42,4 +47,15 @@ public class RequestHandlerMetadata {
         return pathInfo.equals(path) && method.equals(this.requestMethod);
     }
 
+    public Outcome<Object, Throwable> handle(final HttpServletRequest request,
+                                             final HttpServletResponse response,
+                                             final Set<MethodArgumentResolver> resolvers) {
+        return Outcome.from(() -> {
+            final Object[] args = Arrays.stream(method.getParameters())
+                    .map(parameter -> MethodArgumentResolver.resolve(request, response, resolvers, parameter))
+                    .toArray();
+
+            return method.invoke(instance, args);
+        });
+    }
 }
