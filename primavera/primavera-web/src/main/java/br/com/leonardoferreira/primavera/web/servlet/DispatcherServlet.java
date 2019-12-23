@@ -3,8 +3,8 @@ package br.com.leonardoferreira.primavera.web.servlet;
 import br.com.leonardoferreira.primavera.primavera.Primavera;
 import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerList;
 import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerMetadata;
-import br.com.leonardoferreira.primavera.web.response.handler.ResponseHandler;
 import br.com.leonardoferreira.primavera.web.resolver.MethodArgumentResolver;
+import br.com.leonardoferreira.primavera.web.response.handler.ResponseHandler;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -33,7 +33,7 @@ public class DispatcherServlet extends HttpServlet {
         RequestHandlerMetadata requestHandlerMetadata = handlers.findByRequest(req);
 
         if (requestHandlerMetadata == null) {
-            responseHandler.notFound(resp);
+            responseHandler.handleNotFound(req, resp);
         } else {
             handleRequest(requestHandlerMetadata, req, resp);
         }
@@ -41,7 +41,7 @@ public class DispatcherServlet extends HttpServlet {
 
     private void handleRequest(final RequestHandlerMetadata requestHandlerMetadata,
                                final HttpServletRequest req,
-                               final HttpServletResponse resp) {
+                               final HttpServletResponse resp) throws IOException {
         try {
             final Method method = requestHandlerMetadata.getMethod();
 
@@ -51,9 +51,9 @@ public class DispatcherServlet extends HttpServlet {
 
             final Object result = method.invoke(requestHandlerMetadata.getInstance(), args);
 
-            responseHandler.parse(result, resp);
+            responseHandler.handleResponse(result, resp);
         } catch (final Exception e) {
-            throw new RuntimeException(e);
+            responseHandler.handleError(req, resp, e.getCause());
         }
     }
 

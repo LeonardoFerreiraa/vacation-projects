@@ -11,21 +11,15 @@ import lombok.Data;
 public class ResponseEntity<T> {
 
     @Builder.Default
-    private final ResponseStatus status = ResponseStatus.OK;
+    private final HttpStatus status = HttpStatus.OK;
 
     private final T body;
 
     private final URI location;
 
-    public static ResponseEntity<?> notFound() {
-        return builder()
-                .status(ResponseStatus.NOT_FOUND)
-                .build();
-    }
-
     public static ResponseEntity<?> created(final URI location) {
         return builder()
-                .status(ResponseStatus.CREATED)
+                .status(HttpStatus.CREATED)
                 .location(location)
                 .build();
     }
