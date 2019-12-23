@@ -2,9 +2,9 @@ package br.com.leonardoferreira.primavera.web.resolver;
 
 import br.com.leonardoferreira.primavera.primavera.annotation.AnnotationFinder;
 import br.com.leonardoferreira.primavera.primavera.stereotype.Component;
-import br.com.leonardoferreira.primavera.web.annotation.RequestBody;
-import com.google.gson.Gson;
-import java.io.InputStreamReader;
+import br.com.leonardoferreira.primavera.web.request.RequestBody;
+import br.com.leonardoferreira.primavera.web.parser.json.JsonParser;
+import java.io.InputStream;
 import java.lang.reflect.Parameter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,10 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class RequestBodyMethodArgumentResolver implements MethodArgumentResolver {
 
-    private final Gson gson;
+    private final JsonParser jsonParser;
 
-    public RequestBodyMethodArgumentResolver() {
-        this.gson = new Gson();
+    public RequestBodyMethodArgumentResolver(final JsonParser jsonParser) {
+        this.jsonParser = jsonParser;
     }
 
     @Override
@@ -25,10 +25,9 @@ public class RequestBodyMethodArgumentResolver implements MethodArgumentResolver
 
     @Override
     public Object resolve(final Parameter parameter, final HttpServletRequest req, final HttpServletResponse resp) {
-        try (var is = req.getInputStream()) {
-            final InputStreamReader reader = new InputStreamReader(is);
-            return gson.fromJson(reader, parameter.getType());
-        } catch (Exception e) {
+        try (final InputStream inputStream = req.getInputStream()) {
+            return jsonParser.fromJson(inputStream, parameter.getType());
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }

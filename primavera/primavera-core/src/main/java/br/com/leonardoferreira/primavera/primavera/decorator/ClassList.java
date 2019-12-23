@@ -4,19 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class ClassList {
 
-    private final Set<Class<?>> classes;
-
-    public ClassList(final Set<Class<?>> classes) {
-        this.classes = classes;
-    }
-
-    public ClassList() {
-        this.classes = new HashSet<>();
-    }
+    private final Set<Class<?>> classes = new HashSet<>();
 
     @SuppressWarnings("unchecked")
     public <T> T findFirst(final Predicate<Class<?>> predicate) {
@@ -39,8 +31,11 @@ public class ClassList {
         this.classes.addAll(classes);
     }
 
-    public Stream<Class<?>> stream() {
-        return classes.stream();
+    public <T> Set<Class<?>> findAllImplementations(final Class<T> clazz) {
+        return classes.stream()
+                .filter(it -> clazz.isAssignableFrom(it))
+                .filter(it -> !it.isInterface())
+                .collect(Collectors.toSet());
     }
 
 }

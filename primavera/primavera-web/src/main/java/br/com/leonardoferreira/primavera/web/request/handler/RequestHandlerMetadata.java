@@ -1,6 +1,7 @@
-package br.com.leonardoferreira.primavera.web.handler;
+package br.com.leonardoferreira.primavera.web.request.handler;
 
 import br.com.leonardoferreira.primavera.primavera.annotation.AnnotationFinder;
+import br.com.leonardoferreira.primavera.web.request.RequestMethod;
 import java.lang.reflect.Method;
 import javax.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;

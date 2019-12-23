@@ -1,9 +1,11 @@
 package br.com.leonardoferreira.primavera.controller;
 
 import br.com.leonardoferreira.primavera.primavera.stereotype.Component;
-import br.com.leonardoferreira.primavera.web.annotation.RequestBody;
-import br.com.leonardoferreira.primavera.web.handler.RequestHandler;
-import br.com.leonardoferreira.primavera.web.handler.RequestMethod;
+import br.com.leonardoferreira.primavera.web.request.RequestBody;
+import br.com.leonardoferreira.primavera.web.request.handler.RequestHandler;
+import br.com.leonardoferreira.primavera.web.request.RequestMethod;
+import br.com.leonardoferreira.primavera.web.response.ResponseEntity;
+import java.net.URI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -16,9 +18,9 @@ public class FirstController {
     }
 
     @RequestHandler(method = RequestMethod.POST, path = "/hello")
-    public Greeting post(@RequestBody Greeting greeting) {
+    public ResponseEntity<?> post(@RequestBody Greeting greeting) {
         System.out.println(greeting);
-        return greeting;
+        return ResponseEntity.created(URI.create("/hello"));
     }
 
     @Data

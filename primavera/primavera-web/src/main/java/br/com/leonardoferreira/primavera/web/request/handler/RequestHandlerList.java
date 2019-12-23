@@ -1,4 +1,4 @@
-package br.com.leonardoferreira.primavera.web.handler;
+package br.com.leonardoferreira.primavera.web.request.handler;
 
 import br.com.leonardoferreira.primavera.primavera.Primavera;
 import br.com.leonardoferreira.primavera.primavera.metadata.ComponentMetaData;

@@ -49,7 +49,7 @@ class PackageClasspathScanner implements ClasspathScanner {
                     classes.addAll(findClasses(file, completeQualifier(packageName, file)));
                 } else if (file.getName().endsWith(".class")) {
                     final Class<?> clazz = retrieveClass(packageName, file);
-                    if (!clazz.isInterface()) {
+                    if (!clazz.isAnnotation()) {
                         classes.add(clazz);
                     }
                 }

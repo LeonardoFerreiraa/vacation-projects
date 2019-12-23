@@ -1,5 +1,6 @@
-package br.com.leonardoferreira.primavera.web.handler;
+package br.com.leonardoferreira.primavera.web.request.handler;
 
+import br.com.leonardoferreira.primavera.web.request.RequestMethod;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

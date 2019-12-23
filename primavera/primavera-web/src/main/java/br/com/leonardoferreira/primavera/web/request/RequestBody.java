@@ -1,4 +1,4 @@
-package br.com.leonardoferreira.primavera.web.annotation;
+package br.com.leonardoferreira.primavera.web.request;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -78,7 +78,7 @@ public abstract class PrimaveraProvider implements Primavera {
                 }
             }
 
-            throw new RuntimeException("constructor not found");
+            throw new RuntimeException("constructor not found for type " + clazz);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -105,7 +105,7 @@ public abstract class PrimaveraProvider implements Primavera {
             return bean.getInstance();
         }
 
-        final Class<?> clazz = classes.findFirst(it -> it.equals(type));
+        final Class<?> clazz = classes.findFirst(type::isAssignableFrom);
 
         if (clazz == null) {
             return null;
