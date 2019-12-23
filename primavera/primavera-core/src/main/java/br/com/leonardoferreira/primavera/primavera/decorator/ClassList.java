@@ -1,9 +1,10 @@
 package br.com.leonardoferreira.primavera.primavera.decorator;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class ClassList {
 
@@ -14,7 +15,7 @@ public class ClassList {
     }
 
     public ClassList() {
-        this.classes = Collections.emptySet();
+        this.classes = new HashSet<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -32,6 +33,14 @@ public class ClassList {
         classes.stream()
                 .filter(filter)
                 .forEach(consumer);
+    }
+
+    public void addAll(final Set<Class<?>> classes) {
+        this.classes.addAll(classes);
+    }
+
+    public Stream<Class<?>> stream() {
+        return classes.stream();
     }
 
 }

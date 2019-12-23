@@ -14,11 +14,6 @@ public class ComponentList {
         return bean.getInstance();
     }
 
-    public <T> boolean hasComponentForClass(final Class<T> clazz) {
-        return components.stream()
-                .anyMatch(it -> it.getType().equals(clazz));
-    }
-
     @SuppressWarnings("unchecked")
     public <T> ComponentMetaData<T> findByType(final Class<T> clazz) {
         return (ComponentMetaData<T>) components.stream()
@@ -29,5 +24,10 @@ public class ComponentList {
 
     public Stream<ComponentMetaData<?>> stream() {
         return components.stream();
+    }
+
+    public <T> boolean hasComponent(final ComponentMetaData<T> componentMetaData) {
+        return components.stream()
+                .anyMatch(c -> c.equals(componentMetaData));
     }
 }

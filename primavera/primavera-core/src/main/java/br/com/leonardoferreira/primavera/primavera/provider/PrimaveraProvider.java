@@ -19,11 +19,11 @@ public abstract class PrimaveraProvider implements Primavera {
 
     protected final ComponentList components = new ComponentList();
 
-    protected ClassList classes = new ClassList();
+    protected final ClassList classes = new ClassList();
 
     @Override
     public void scan(final Class<?> baseClass) {
-        this.classes = new ClassList(ClasspathScanner.scan(baseClass));
+        this.classes.addAll(ClasspathScanner.scan(baseClass));
         classes.forEach(
                 c -> AnnotationFinder.isAnnotationPresent(c, Component.class),
                 this::registerComponent
@@ -32,15 +32,19 @@ public abstract class PrimaveraProvider implements Primavera {
 
     @Override
     public <T> T registerComponent(final Class<T> clazz) {
-        if (components.hasComponentForClass(clazz)) {
-            return retrieveComponent(clazz);
-        }
-
-        return components.add(new ComponentMetaData<>(
+        return registerComponent(new ComponentMetaData<>(
                 clazz,
                 clazz.getSimpleName(),
                 newInstance(clazz)
         ));
+    }
+
+    public <T> T registerComponent(final ComponentMetaData<T> componentMetaData) {
+        if (components.hasComponent(componentMetaData)) {
+            return retrieveComponent(componentMetaData.getType());
+        }
+
+        return components.add(componentMetaData);
     }
 
     @Override

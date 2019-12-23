@@ -2,6 +2,7 @@ package br.com.leonardoferreira.primavera.web.handler;
 
 import br.com.leonardoferreira.primavera.primavera.annotation.AnnotationFinder;
 import java.lang.reflect.Method;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -32,4 +33,12 @@ public class RequestHandlerMetadata {
         );
 
     }
+
+    public boolean canHandle(final HttpServletRequest req) {
+        final String pathInfo = req.getPathInfo();
+        final RequestMethod method = RequestMethod.valueOf(req.getMethod());
+
+        return pathInfo.equals(path) && method.equals(this.requestMethod);
+    }
+
 }

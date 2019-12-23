@@ -1,5 +1,12 @@
 package br.com.leonardoferreira.primavera.primavera.metadata;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@AllArgsConstructor
+@EqualsAndHashCode(of = {"name"})
 public class ComponentMetaData<T> {
 
     private final Class<T> type;
@@ -8,21 +15,4 @@ public class ComponentMetaData<T> {
 
     private final T instance;
 
-    public ComponentMetaData(final Class<T> type, final String name, final T instance) {
-        this.type = type;
-        this.name = name;
-        this.instance = instance;
-    }
-
-    public Class<T> getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public T getInstance() {
-        return instance;
-    }
 }

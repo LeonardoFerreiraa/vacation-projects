@@ -33,12 +33,9 @@ public class RequestHandlerList {
 
     public RequestHandlerMetadata findByRequest(final HttpServletRequest req) {
         return handlers.stream()
-                .filter(handlerMetadata ->
-                        req.getPathInfo().equals(handlerMetadata.getPath()) &&
-                                req.getMethod().equals(handlerMetadata.getRequestMethod().name())
-                )
+                .filter(handlerMetadata -> handlerMetadata.canHandle(req))
                 .findFirst()
                 .orElse(null);
-
     }
+
 }
