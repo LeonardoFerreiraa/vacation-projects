@@ -11,7 +11,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
@@ -49,7 +48,7 @@ public class AnnotationProxy implements InvocationHandler {
     }
 
     private static Pair<String, Method> retrieveAliasFor(final Method method, final Class<?> value) {
-        return Optional.ofNullable(AnnotationUtils.retrieveAnnotation(method, AliasFor.class))
+        return AnnotationUtils.findAnnotation(method, AliasFor.class)
                 .filter(alias -> alias.targetClass().equals(value))
                 .map(alias -> Pair.of(alias.targetMethod(), method))
                 .orElse(null);

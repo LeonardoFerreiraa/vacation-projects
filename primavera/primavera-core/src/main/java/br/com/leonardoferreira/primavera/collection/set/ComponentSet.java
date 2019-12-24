@@ -1,4 +1,4 @@
-package br.com.leonardoferreira.primavera.decorator;
+package br.com.leonardoferreira.primavera.collection.set;
 
 import br.com.leonardoferreira.primavera.functional.Pair;
 import br.com.leonardoferreira.primavera.metadata.ComponentMetaData;
@@ -6,7 +6,7 @@ import br.com.leonardoferreira.primavera.metadata.ComponentMethodMetaData;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-public class ComponentList extends AbstractListDecorator<ComponentMetaData<?>> {
+public class ComponentSet extends PrimaveraSet<ComponentMetaData<?>> {
 
     @SuppressWarnings("unchecked")
     public <T> ComponentMetaData<T> findByType(final Class<T> clazz) {

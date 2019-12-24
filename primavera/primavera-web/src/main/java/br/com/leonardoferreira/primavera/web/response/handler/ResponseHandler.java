@@ -59,7 +59,9 @@ public class ResponseHandler {
                             final HttpServletResponse response,
                             final Throwable error) {
         final Throwable cause = error instanceof InvocationTargetException ? error.getCause() : error;
-        final ResponseError responseError = AnnotationUtils.retrieveAnnotation(cause.getClass(), ResponseError.class);
+        final ResponseError responseError = AnnotationUtils.findAnnotation(cause.getClass(), ResponseError.class)
+                .orElse(null);
+
         if (responseError == null) {
             error.printStackTrace();
             handleResponse(

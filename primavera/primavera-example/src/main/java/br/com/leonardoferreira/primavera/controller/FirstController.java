@@ -1,5 +1,7 @@
 package br.com.leonardoferreira.primavera.controller;
 
+import br.com.leonardoferreira.primavera.service.FirstService;
+import br.com.leonardoferreira.primavera.service.SecondService;
 import br.com.leonardoferreira.primavera.stereotype.Controller;
 import br.com.leonardoferreira.primavera.web.exception.handler.ResponseError;
 import br.com.leonardoferreira.primavera.web.request.RequestBody;
@@ -14,6 +16,16 @@ import lombok.Data;
 
 @Controller
 public class FirstController {
+
+    private final FirstService firstService;
+
+    private final SecondService secondService;
+
+    public FirstController(final FirstService firstService,
+                           final SecondService secondService) {
+        this.firstService = firstService;
+        this.secondService = secondService;
+    }
 
     @Get("/hello")
     public Greeting index() {

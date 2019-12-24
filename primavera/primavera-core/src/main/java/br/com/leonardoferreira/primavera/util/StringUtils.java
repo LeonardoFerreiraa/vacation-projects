@@ -1,5 +1,9 @@
 package br.com.leonardoferreira.primavera.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StringUtils {
 
     public static boolean isBlank(final String str) {

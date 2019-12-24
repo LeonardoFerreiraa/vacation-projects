@@ -1,13 +1,11 @@
 package br.com.leonardoferreira.primavera;
 
-import br.com.leonardoferreira.primavera.decorator.ComponentList;
+import br.com.leonardoferreira.primavera.collection.set.ComponentSet;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 import java.util.Set;
 
 public interface Primavera {
-
-    <T> T registerComponent(final Class<T> clazz);
 
     <T> T retrieveComponent(final Class<T> clazz);
 
@@ -17,7 +15,7 @@ public interface Primavera {
 
     PrimaveraType type();
 
-    ComponentList components();
+    ComponentSet components();
 
     <T> Set<T> retrieveComponents(Class<T> clazz);
 

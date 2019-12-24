@@ -1,56 +1,29 @@
 package br.com.leonardoferreira.primavera.provider;
 
 import br.com.leonardoferreira.primavera.Primavera;
-import br.com.leonardoferreira.primavera.decorator.ClassList;
-import br.com.leonardoferreira.primavera.decorator.ComponentList;
-import br.com.leonardoferreira.primavera.functional.Outcome;
+import br.com.leonardoferreira.primavera.collection.set.ClassSet;
+import br.com.leonardoferreira.primavera.collection.set.ComponentSet;
+import br.com.leonardoferreira.primavera.component.ComponentGraph;
 import br.com.leonardoferreira.primavera.metadata.ComponentMetaData;
 import br.com.leonardoferreira.primavera.scanner.ClasspathScanner;
-import br.com.leonardoferreira.primavera.stereotype.Component;
-import br.com.leonardoferreira.primavera.util.AnnotationUtils;
-import br.com.leonardoferreira.primavera.util.StringUtils;
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class PrimaveraProvider implements Primavera {
 
-    protected final ComponentList components = new ComponentList();
+    protected final ComponentSet components = new ComponentSet();
 
-    protected final ClassList classes = new ClassList();
+    protected final ClassSet classes = new ClassSet();
 
     @Override
     public void scan(final Class<?> baseClass) {
-        this.classes.addAll(ClasspathScanner.scan(baseClass));
+        classes.addAll(ClasspathScanner.scan(baseClass));
 
-        classes.stream()
-                .filter(c -> AnnotationUtils.isAnnotationPresent(c, Component.class))
-                .forEach(this::registerComponent);
-    }
-
-    @Override
-    public <T> T registerComponent(final Class<T> clazz) {
-        final Component component = AnnotationUtils.retrieveAnnotation(clazz, Component.class);
-        Objects.requireNonNull(component);
-
-        return registerComponent(new ComponentMetaData<>(
-                clazz,
-                StringUtils.isBlank(component.name()) ? clazz.getSimpleName() : component.name(),
-                newInstance(clazz)
-        ));
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T registerComponent(final ComponentMetaData<T> componentMetaData) {
-        if (components.has(componentMetaData)) {
-            return retrieveComponent(componentMetaData.getType());
-        }
-
-        return (T) components.add(componentMetaData).getInstance();
+        ComponentGraph.build(classes, this)
+                .components()
+                .forEach(componentNode -> registerComponent(componentNode.toComponentMetaData()));
     }
 
     @Override
@@ -61,7 +34,7 @@ public abstract class PrimaveraProvider implements Primavera {
     }
 
     @Override
-    public ComponentList components() {
+    public ComponentSet components() {
         return components;
     }
 
@@ -74,48 +47,13 @@ public abstract class PrimaveraProvider implements Primavera {
                 .collect(Collectors.toSet());
     }
 
-    private <T> T newInstance(final Class<T> clazz) {
-        try {
-            final Constructor<?>[] constructors = clazz.getConstructors();
-            for (final Constructor<?> constructor : constructors) {
-                final Outcome<T, Throwable> outcome = resolve(constructor);
-                if (outcome.hasResult()) {
-                    return outcome.getResult();
-                }
-            }
-
-            throw new RuntimeException("constructor not found for type " + clazz);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @SuppressWarnings("unchecked")
-    protected <T> Outcome<T, Throwable> resolve(final Constructor<?> constructor) {
-        return Outcome.from(() -> {
-            var parameters = Arrays.stream(constructor.getParameterTypes())
-                    .map(this::findClass)
-                    .filter(Objects::nonNull)
-                    .toArray();
-
-            return (T) constructor.newInstance(parameters);
-        });
-    }
-
-    protected Object findClass(final Class<?> type) {
-        final ComponentMetaData<?> bean = components.findByType(type);
-
-        if (bean != null) {
-            return bean.getInstance();
+    protected <T> T registerComponent(final ComponentMetaData<T> componentMetaData) {
+        if (components.contains(componentMetaData)) {
+            return retrieveComponent(componentMetaData.getType());
         }
 
-        final Class<?> clazz = classes.findFirst(cl -> type.isAssignableFrom(cl) && !cl.isInterface());
-
-        if (clazz == null) {
-            return null;
-        }
-
-        return registerComponent(clazz);
+        return (T) components.addAndReturn(componentMetaData).getInstance();
     }
 
 }

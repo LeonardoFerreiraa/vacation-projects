@@ -21,10 +21,8 @@ public class RequestParamMethodArgumentResolver implements MethodArgumentResolve
 
     @Override
     public Object resolve(final Parameter parameter, final HttpServletRequest request, final HttpServletResponse response) {
-        final RequestParam requestParam = AnnotationUtils.retrieveAnnotation(parameter, RequestParam.class);
-        if (requestParam == null) {
-            throw new IllegalArgumentException();
-        }
+        final RequestParam requestParam = AnnotationUtils.findAnnotation(parameter, RequestParam.class)
+                .orElseThrow();
 
         final String value = request.getParameter(requestParam.value());
         if (StringUtils.isBlank(value) && requestParam.required()) {
