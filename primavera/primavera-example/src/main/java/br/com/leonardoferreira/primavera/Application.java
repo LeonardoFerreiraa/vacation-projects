@@ -2,6 +2,8 @@ package br.com.leonardoferreira.primavera;
 
 import br.com.leonardoferreira.primavera.service.FirstService;
 import br.com.leonardoferreira.primavera.service.SecondService;
+import br.com.leonardoferreira.primavera.web.parser.json.GsonJsonParser;
+import br.com.leonardoferreira.primavera.web.parser.json.JsonParser;
 
 public class Application {
 

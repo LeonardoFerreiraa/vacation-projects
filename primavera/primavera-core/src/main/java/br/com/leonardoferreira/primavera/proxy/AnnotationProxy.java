@@ -22,6 +22,10 @@ public class AnnotationProxy implements InvocationHandler {
 
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+        if ("toString".equals(method.getName())) {
+            return "annotationProxy";
+        }
+
         return methods.get(method.getName());
     }
 

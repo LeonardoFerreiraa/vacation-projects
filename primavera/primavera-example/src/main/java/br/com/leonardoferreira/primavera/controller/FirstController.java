@@ -2,6 +2,7 @@ package br.com.leonardoferreira.primavera.controller;
 
 import br.com.leonardoferreira.primavera.service.FirstService;
 import br.com.leonardoferreira.primavera.service.SecondService;
+import br.com.leonardoferreira.primavera.service.ThirdService;
 import br.com.leonardoferreira.primavera.stereotype.Controller;
 import br.com.leonardoferreira.primavera.web.exception.handler.ResponseError;
 import br.com.leonardoferreira.primavera.web.request.RequestBody;
@@ -21,10 +22,15 @@ public class FirstController {
 
     private final SecondService secondService;
 
+    private final ThirdService thirdService;
+
     public FirstController(final FirstService firstService,
-                           final SecondService secondService) {
+                           final SecondService secondService,
+                           final ThirdService thirdService) {
+        System.out.println("firstController");
         this.firstService = firstService;
         this.secondService = secondService;
+        this.thirdService = thirdService;
     }
 
     @Get("/hello")

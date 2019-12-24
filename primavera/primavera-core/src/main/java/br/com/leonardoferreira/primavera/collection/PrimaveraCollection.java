@@ -29,6 +29,10 @@ public abstract class PrimaveraCollection<T> implements Iterable<T>, Collection<
         return null;
     }
 
+    public boolean contains(final Predicate<T> predicate) {
+        return find(predicate).isPresent();
+    }
+
     @Override
     public Iterator<T> iterator() {
         return elements().iterator();

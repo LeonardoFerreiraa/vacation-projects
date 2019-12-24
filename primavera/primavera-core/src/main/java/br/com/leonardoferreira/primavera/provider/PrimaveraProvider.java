@@ -3,7 +3,7 @@ package br.com.leonardoferreira.primavera.provider;
 import br.com.leonardoferreira.primavera.Primavera;
 import br.com.leonardoferreira.primavera.collection.set.ClassSet;
 import br.com.leonardoferreira.primavera.collection.set.ComponentSet;
-import br.com.leonardoferreira.primavera.component.ComponentGraph;
+import br.com.leonardoferreira.primavera.component.ComponentBuilder;
 import br.com.leonardoferreira.primavera.metadata.ComponentMetaData;
 import br.com.leonardoferreira.primavera.scanner.ClasspathScanner;
 import java.util.NoSuchElementException;
@@ -21,16 +21,15 @@ public abstract class PrimaveraProvider implements Primavera {
     public void scan(final Class<?> baseClass) {
         classes.addAll(ClasspathScanner.scan(baseClass));
 
-        ComponentGraph.build(classes, this)
-                .components()
-                .forEach(componentNode -> registerComponent(componentNode.toComponentMetaData()));
+        ComponentBuilder.forEach(classes, this)
+                .register(this::registerComponent);
     }
 
     @Override
     public <T> T retrieveComponent(final Class<T> clazz) {
         return Optional.ofNullable(components.findByType(clazz))
                 .map(ComponentMetaData::getInstance)
-                .orElseThrow(() -> new NoSuchElementException("component not found"));
+                .orElseThrow(() -> new NoSuchElementException("component not found " + clazz));
     }
 
     @Override
