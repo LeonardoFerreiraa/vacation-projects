@@ -1,13 +1,14 @@
 package br.com.leonardoferreira.primavera.provider;
 
-import br.com.leonardoferreira.primavera.decorator.ComponentList;
 import br.com.leonardoferreira.primavera.Primavera;
 import br.com.leonardoferreira.primavera.decorator.ClassList;
+import br.com.leonardoferreira.primavera.decorator.ComponentList;
 import br.com.leonardoferreira.primavera.functional.Outcome;
 import br.com.leonardoferreira.primavera.metadata.ComponentMetaData;
 import br.com.leonardoferreira.primavera.scanner.ClasspathScanner;
 import br.com.leonardoferreira.primavera.stereotype.Component;
 import br.com.leonardoferreira.primavera.util.AnnotationUtils;
+import br.com.leonardoferreira.primavera.util.StringUtils;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -33,9 +34,12 @@ public abstract class PrimaveraProvider implements Primavera {
 
     @Override
     public <T> T registerComponent(final Class<T> clazz) {
+        final Component component = AnnotationUtils.retrieveAnnotation(clazz, Component.class);
+        Objects.requireNonNull(component);
+
         return registerComponent(new ComponentMetaData<>(
                 clazz,
-                clazz.getSimpleName(),
+                StringUtils.isBlank(component.name()) ? clazz.getSimpleName() : component.name(),
                 newInstance(clazz)
         ));
     }
