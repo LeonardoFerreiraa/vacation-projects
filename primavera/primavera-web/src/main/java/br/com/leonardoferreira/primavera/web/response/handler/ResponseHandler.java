@@ -1,12 +1,14 @@
 package br.com.leonardoferreira.primavera.web.response.handler;
 
-import br.com.leonardoferreira.primavera.primavera.annotation.AnnotationFinder;
-import br.com.leonardoferreira.primavera.primavera.stereotype.Component;
-import br.com.leonardoferreira.primavera.web.error.handler.ResponseError;
+import br.com.leonardoferreira.primavera.util.AnnotationUtils;
+import br.com.leonardoferreira.primavera.stereotype.Component;
+import br.com.leonardoferreira.primavera.web.exception.HttpException;
+import br.com.leonardoferreira.primavera.web.exception.handler.ResponseError;
 import br.com.leonardoferreira.primavera.web.parser.json.JsonParser;
 import br.com.leonardoferreira.primavera.web.response.HttpStatus;
 import br.com.leonardoferreira.primavera.web.response.ResponseEntity;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
@@ -56,14 +58,21 @@ public class ResponseHandler {
     public void handleError(final HttpServletRequest request,
                             final HttpServletResponse response,
                             final Throwable error) {
-        final Throwable cause = error.getCause();
-        final ResponseError responseError = AnnotationFinder.retrieveAnnotation(cause.getClass(), ResponseError.class);
+        final Throwable cause = error instanceof InvocationTargetException ? error.getCause() : error;
+        final ResponseError responseError = AnnotationUtils.retrieveAnnotation(cause.getClass(), ResponseError.class);
         if (responseError == null) {
             error.printStackTrace();
             handleResponse(
                     request,
                     response,
                     buildResponseEntity(request, HttpStatus.INTERNAL_SERVER_ERROR, cause.getMessage())
+            );
+        } else if (cause instanceof HttpException) {
+            HttpException httpException = (HttpException) cause;
+            handleResponse(
+                    request,
+                    response,
+                    buildResponseEntity(request, httpException.getStatus(), httpException.getMessage())
             );
         } else {
             handleResponse(

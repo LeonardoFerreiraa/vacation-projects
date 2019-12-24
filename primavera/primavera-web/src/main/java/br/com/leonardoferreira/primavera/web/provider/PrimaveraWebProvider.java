@@ -1,8 +1,8 @@
 package br.com.leonardoferreira.primavera.web.provider;
 
-import br.com.leonardoferreira.primavera.primavera.PrimaveraType;
-import br.com.leonardoferreira.primavera.primavera.provider.PrimaveraProvider;
-import br.com.leonardoferreira.primavera.primavera.scanner.ClasspathScanner;
+import br.com.leonardoferreira.primavera.PrimaveraType;
+import br.com.leonardoferreira.primavera.provider.PrimaveraProvider;
+import br.com.leonardoferreira.primavera.scanner.ClasspathScanner;
 import br.com.leonardoferreira.primavera.web.server.UndertowWebServer;
 import br.com.leonardoferreira.primavera.web.server.WebServer;
 import br.com.leonardoferreira.primavera.web.servlet.DispatcherServlet;

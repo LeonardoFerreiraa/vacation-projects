@@ -1,7 +1,7 @@
 package br.com.leonardoferreira.primavera.web.request.handler;
 
-import br.com.leonardoferreira.primavera.primavera.annotation.AnnotationFinder;
-import br.com.leonardoferreira.primavera.primavera.functional.Outcome;
+import br.com.leonardoferreira.primavera.util.AnnotationUtils;
+import br.com.leonardoferreira.primavera.functional.Outcome;
 import br.com.leonardoferreira.primavera.web.request.RequestMethod;
 import br.com.leonardoferreira.primavera.web.resolver.MethodArgumentResolver;
 import java.lang.reflect.Method;
@@ -26,7 +26,7 @@ public class RequestHandlerMetadata {
     private final String path;
 
     public static RequestHandlerMetadata newInstance(final Object instance, final Method method) {
-        final RequestHandler handler = AnnotationFinder.retrieveAnnotation(method, RequestHandler.class);
+        final RequestHandler handler = AnnotationUtils.retrieveAnnotation(method, RequestHandler.class);
         if (handler == null) {
             return null;
         }

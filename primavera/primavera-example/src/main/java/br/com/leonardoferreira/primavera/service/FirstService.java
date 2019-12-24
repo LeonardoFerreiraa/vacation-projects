@@ -1,6 +1,6 @@
 package br.com.leonardoferreira.primavera.service;
 
-import br.com.leonardoferreira.primavera.primavera.stereotype.Service;
+import br.com.leonardoferreira.primavera.stereotype.Service;
 
 @Service
 public class FirstService {

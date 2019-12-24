@@ -1,7 +1,7 @@
 package br.com.leonardoferreira.primavera.web.servlet;
 
-import br.com.leonardoferreira.primavera.primavera.Primavera;
-import br.com.leonardoferreira.primavera.primavera.functional.Outcome;
+import br.com.leonardoferreira.primavera.Primavera;
+import br.com.leonardoferreira.primavera.functional.Outcome;
 import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerList;
 import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerMetadata;
 import br.com.leonardoferreira.primavera.web.resolver.MethodArgumentResolver;

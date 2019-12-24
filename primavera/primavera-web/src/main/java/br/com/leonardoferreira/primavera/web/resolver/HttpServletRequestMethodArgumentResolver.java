@@ -1,6 +1,6 @@
 package br.com.leonardoferreira.primavera.web.resolver;
 
-import br.com.leonardoferreira.primavera.primavera.stereotype.Component;
+import br.com.leonardoferreira.primavera.stereotype.Component;
 import java.lang.reflect.Parameter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,8 +14,8 @@ public class HttpServletRequestMethodArgumentResolver implements MethodArgumentR
     }
 
     @Override
-    public Object resolve(final Parameter parameter, final HttpServletRequest req, final HttpServletResponse resp) {
-        return req;
+    public Object resolve(final Parameter parameter, final HttpServletRequest request, final HttpServletResponse response) {
+        return request;
     }
 
 }

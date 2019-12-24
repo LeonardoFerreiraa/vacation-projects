@@ -1,7 +1,5 @@
 package br.com.leonardoferreira.primavera;
 
-import br.com.leonardoferreira.primavera.primavera.Primavera;
-import br.com.leonardoferreira.primavera.primavera.PrimaveraApplication;
 import br.com.leonardoferreira.primavera.service.FirstService;
 import br.com.leonardoferreira.primavera.service.SecondService;
 

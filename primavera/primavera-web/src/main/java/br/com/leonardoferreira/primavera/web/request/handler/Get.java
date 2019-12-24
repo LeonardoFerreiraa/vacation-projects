@@ -1,5 +1,6 @@
 package br.com.leonardoferreira.primavera.web.request.handler;
 
+import br.com.leonardoferreira.primavera.annotation.AliasFor;
 import br.com.leonardoferreira.primavera.web.request.RequestMethod;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,11 +8,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
+@RequestHandler(method = RequestMethod.GET)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface RequestHandler {
+public @interface Get {
 
-    RequestMethod method();
-
-    String path() default "/";
+    @AliasFor(targetClass = RequestHandler.class, targetMethod = "path")
+    String value();
 
 }

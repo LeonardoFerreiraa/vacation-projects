@@ -1,6 +1,6 @@
 package br.com.leonardoferreira.primavera.web.parser.json;
 
-import br.com.leonardoferreira.primavera.primavera.stereotype.Component;
+import br.com.leonardoferreira.primavera.stereotype.Component;
 import com.google.gson.Gson;
 import java.io.InputStream;
 import java.io.InputStreamReader;

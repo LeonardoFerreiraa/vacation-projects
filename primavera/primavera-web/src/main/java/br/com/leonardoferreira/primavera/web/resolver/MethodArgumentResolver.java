@@ -30,6 +30,6 @@ public interface MethodArgumentResolver {
 
     boolean canResolve(Parameter parameter);
 
-    Object resolve(final Parameter parameter, HttpServletRequest req, final HttpServletResponse resp);
+    Object resolve(final Parameter parameter, HttpServletRequest request, final HttpServletResponse response);
 
 }
