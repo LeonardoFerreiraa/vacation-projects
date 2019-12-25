@@ -1,5 +1,6 @@
 package br.com.leonardoferreira.primavera.scanner;
 
+import br.com.leonardoferreira.primavera.util.ExceptionUtils;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
@@ -27,7 +28,7 @@ class JarClasspathScanner implements ClasspathScanner {
         try {
             return Collections.list(classLoader.getResources(packageName.replaceAll("\\.", "/")))
                     .stream()
-                    .map(this::getObject)
+                    .map(this::findClassesByUrl)
                     .flatMap(Set::stream)
                     .collect(Collectors.toSet());
         } catch (Exception e) {
@@ -35,7 +36,7 @@ class JarClasspathScanner implements ClasspathScanner {
         }
     }
 
-    private Set<Class<?>> getObject(final URL url) {
+    private Set<Class<?>> findClassesByUrl(final URL url) {
         try {
             final URLConnection urlConnection = url.openConnection();
             try (final JarFile jarFile = ((JarURLConnection) urlConnection).getJarFile()) {
@@ -43,8 +44,7 @@ class JarClasspathScanner implements ClasspathScanner {
                         .stream()
                         .filter(jarEntry -> jarEntry.getRealName().endsWith(".class"))
                         .map(jarEntry -> createClassFile(jarFile, jarEntry))
-                        .map(ClassFile::getName)
-                        .map(this::classNameToClass)
+                        .map(this::classFileToClass)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
             }
@@ -53,12 +53,8 @@ class JarClasspathScanner implements ClasspathScanner {
         }
     }
 
-    private Class<?> classNameToClass(final String className) {
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException | NoClassDefFoundError e) {
-            return null; // ¯\_(ツ)_/¯
-        }
+    private Class<?> classFileToClass(final ClassFile classFile) {
+        return ExceptionUtils.silence(() -> Class.forName(classFile.getName()));
     }
 
     private ClassFile createClassFile(final JarFile jarFile, final JarEntry jarEntry) {

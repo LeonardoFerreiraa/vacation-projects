@@ -11,17 +11,13 @@ public abstract class PrimaveraCollection<T> implements Iterable<T> {
     protected abstract Collection<T> elements();
 
     public Optional<T> find(final Predicate<T> predicate) {
-        return Optional.ofNullable(findFirst(predicate));
-    }
-
-    public T findFirst(final Predicate<T> predicate) {
         for (final T it : elements()) {
             if (predicate.test(it)) {
-                return it;
+                return Optional.of(it);
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public boolean contains(final Predicate<T> predicate) {

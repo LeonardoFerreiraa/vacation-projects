@@ -36,11 +36,10 @@ public class ComponentMetadataBuilder<T> implements Comparable<ComponentMetadata
     }
 
     public ComponentMetadata<T> build() {
-        return ExceptionUtils.rethrowAsRuntime(() ->
-                new ComponentMetadata<>(
-                        name,
-                        type,
-                        instanceCreator.call()
-                ));
+        return new ComponentMetadata<>(
+                name,
+                type,
+                ExceptionUtils.rethrowAsRuntime(instanceCreator)
+        );
     }
 }

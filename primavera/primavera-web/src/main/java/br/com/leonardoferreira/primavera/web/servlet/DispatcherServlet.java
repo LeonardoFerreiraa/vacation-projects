@@ -29,7 +29,8 @@ public class DispatcherServlet extends HttpServlet {
 
     @Override
     protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-        RequestHandlerMetadata requestHandlerMetadata = handlers.findByRequest(req);
+        RequestHandlerMetadata requestHandlerMetadata = handlers.find(handlerMetadata -> handlerMetadata.canHandle(req))
+                .orElse(null);
 
         if (requestHandlerMetadata == null) {
             responseHandler.handleNotFound(req, resp);

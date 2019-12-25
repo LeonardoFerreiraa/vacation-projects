@@ -7,7 +7,6 @@ import br.com.leonardoferreira.primavera.component.ComponentBuilder;
 import br.com.leonardoferreira.primavera.metadata.ComponentMetadata;
 import br.com.leonardoferreira.primavera.scanner.ClasspathScanner;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,8 +25,9 @@ public abstract class PrimaveraProvider implements Primavera {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T retrieveComponent(final Class<T> clazz) {
-        return Optional.ofNullable(components.findByType(clazz))
+        return (T) components.find(it -> clazz.isAssignableFrom(it.getType()))
                 .map(ComponentMetadata::getInstance)
                 .orElseThrow(() -> new NoSuchElementException("component not found " + clazz));
     }
