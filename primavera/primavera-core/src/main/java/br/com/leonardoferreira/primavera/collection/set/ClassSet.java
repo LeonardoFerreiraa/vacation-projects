@@ -1,10 +1,10 @@
 package br.com.leonardoferreira.primavera.collection.set;
 
+import br.com.leonardoferreira.primavera.collection.PrimaveraCollectionCollector;
 import br.com.leonardoferreira.primavera.collection.list.PrimaveraList;
 import br.com.leonardoferreira.primavera.functional.Pair;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ClassSet extends PrimaveraSet<Class<?>> {
@@ -22,7 +22,7 @@ public class ClassSet extends PrimaveraSet<Class<?>> {
 
         final PrimaveraList<Class<?>> implementations = stream().filter(element -> !element.isInterface())
                 .filter(clazz::isAssignableFrom)
-                .collect(Collectors.toCollection(PrimaveraList::new));
+                .collect(PrimaveraCollectionCollector.toList());
 
         if (implementations.size() > 1) {
             throw new IllegalArgumentException("More than one implementation found");

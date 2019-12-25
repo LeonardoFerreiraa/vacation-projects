@@ -1,6 +1,7 @@
 package br.com.leonardoferreira.primavera.component;
 
 import br.com.leonardoferreira.primavera.Primavera;
+import br.com.leonardoferreira.primavera.collection.PrimaveraCollectionCollector;
 import br.com.leonardoferreira.primavera.collection.set.ClassSet;
 import br.com.leonardoferreira.primavera.collection.set.PrimaveraSet;
 import br.com.leonardoferreira.primavera.metadata.ComponentMetadata;
@@ -76,7 +77,7 @@ public class ComponentBuilder {
                                                                               final ClassSet classes) {
         PrimaveraSet<Class<?>> dependencies = Stream.concat(Arrays.stream(method.getParameterTypes()), Stream.of(clazz))
                 .map(classes::findImplementation)
-                .collect(Collectors.toCollection(PrimaveraSet::new));
+                .collect(PrimaveraCollectionCollector.toSet());
 
         final Component component = AnnotationUtils.findAnnotation(method, Component.class).orElseThrow();
         return new ComponentMetadataBuilder<>(
@@ -93,7 +94,7 @@ public class ComponentBuilder {
                 .stream()
                 .flatMap(Arrays::stream)
                 .map(classes::findImplementation)
-                .collect(Collectors.toCollection(PrimaveraSet::new));
+                .collect(PrimaveraCollectionCollector.toSet());
 
         final Component component = AnnotationUtils.findAnnotation(clazz, Component.class).orElseThrow();
         return new ComponentMetadataBuilder<>(

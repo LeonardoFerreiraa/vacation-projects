@@ -1,10 +1,10 @@
 package br.com.leonardoferreira.primavera.web.resolver;
 
+import br.com.leonardoferreira.primavera.collection.PrimaveraCollectionCollector;
 import br.com.leonardoferreira.primavera.collection.list.PrimaveraList;
 import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerMetadata;
 import java.lang.reflect.Parameter;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,7 +17,7 @@ public interface MethodArgumentResolver {
                           final Parameter parameter) {
         final PrimaveraList<MethodArgumentResolver> elected = resolvers.stream()
                 .filter(it -> it.canResolve(parameter))
-                .collect(Collectors.toCollection(PrimaveraList::new));
+                .collect(PrimaveraCollectionCollector.toList());
 
         if (elected.size() > 1) {
             throw new RuntimeException("More to one resolver to parameter");
