@@ -1,7 +1,7 @@
 package br.com.leonardoferreira.primavera.web.response.handler;
 
-import br.com.leonardoferreira.primavera.util.AnnotationUtils;
 import br.com.leonardoferreira.primavera.stereotype.Component;
+import br.com.leonardoferreira.primavera.util.AnnotationUtils;
 import br.com.leonardoferreira.primavera.web.exception.HttpException;
 import br.com.leonardoferreira.primavera.web.exception.handler.ResponseError;
 import br.com.leonardoferreira.primavera.web.parser.json.JsonParser;
@@ -9,8 +9,6 @@ import br.com.leonardoferreira.primavera.web.response.HttpStatus;
 import br.com.leonardoferreira.primavera.web.response.ResponseEntity;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,8 +36,12 @@ public class ResponseHandler {
             response.setStatus(responseEntity.getStatus().getStatusCode());
         }
 
-        body = Objects.requireNonNullElse(body, Collections.emptyMap());
+        if (body != null) {
+            writeBody(response, body);
+        }
+    }
 
+    private void writeBody(final HttpServletResponse response, final Object body) {
         try (var writer = response.getWriter()) {
             writer.println(jsonParser.toJson(body));
         } catch (IOException e) {

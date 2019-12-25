@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -30,12 +31,12 @@ public class ComponentBuilder {
     public static ComponentBuilder createBuilders(final ClassSet classes, final Primavera primavera) {
         final Map<Class<?>, ComponentMetadataBuilder<?>> classComponentBuilders = classes.stream()
                 .filter(clazz -> AnnotationUtils.isAnnotationPresent(clazz, Component.class))
-                .map(clazz -> buildBuildersByClass(clazz, primavera))
+                .map(clazz -> buildBuildersByClass(clazz, primavera, classes))
                 .collect(Collectors.toMap(ComponentMetadataBuilder::getType, builder -> builder));
 
         final Map<Class<?>, ComponentMetadataBuilder<?>> methodComponentBuilders = classes.methods()
                 .filter(pair -> AnnotationUtils.isAnnotationPresent(pair.getValue(), Component.class))
-                .map(pair -> buildComponentNodeByMethod(pair.getKey(), pair.getValue(), pair.getValue().getReturnType(), primavera))
+                .map(pair -> buildComponentNodeByMethod(pair.getKey(), pair.getValue(), pair.getValue().getReturnType(), primavera, classes))
                 .collect(Collectors.toMap(ComponentMetadataBuilder::getType, builder -> builder));
 
         return new ComponentBuilder(
@@ -53,21 +54,14 @@ public class ComponentBuilder {
             return;
         }
 
-        findBuilder(clazz)
+        builders.get(clazz)
                 .getDependencies()
                 .stream()
                 .filter(dependency -> !alreadyInserted(dependency))
                 .forEach(dependency -> buildComponent(dependency, register));
 
-        final ComponentMetadata<?> build = findBuilder(clazz).build();
+        final ComponentMetadata<?> build = builders.get(clazz).build();
         register.accept(build);
-    }
-
-    private ComponentMetadataBuilder<?> findBuilder(final Class<?> clazz) {
-        return PrimaveraSet.of(builders.keySet())
-                .find(clazz::isAssignableFrom)
-                .map(builders::get)
-                .orElseThrow();
     }
 
     private boolean alreadyInserted(final Class<?> dependency) {
@@ -78,21 +72,27 @@ public class ComponentBuilder {
     private static <T> ComponentMetadataBuilder<T> buildComponentNodeByMethod(final Class<?> clazz,
                                                                               final Method method,
                                                                               final Class<T> componentType,
-                                                                              final Primavera primavera) {
+                                                                              final Primavera primavera,
+                                                                              final ClassSet classes) {
+        PrimaveraSet<Class<?>> dependencies = Stream.concat(Arrays.stream(method.getParameterTypes()), Stream.of(clazz))
+                .map(classes::findImplementation)
+                .collect(Collectors.toCollection(PrimaveraSet::new));
+
         final Component component = AnnotationUtils.findAnnotation(method, Component.class).orElseThrow();
         return new ComponentMetadataBuilder<>(
                 BeanUtils.beanName(componentType, component),
                 componentType,
                 () -> MethodUtils.invokeWithComponents(clazz, method, primavera),
-                PrimaveraSet.of(method.getParameterTypes()).attach(clazz)
+                dependencies
         );
     }
 
-    private static <T> ComponentMetadataBuilder<T> buildBuildersByClass(final Class<T> clazz, final Primavera primavera) {
+    private static <T> ComponentMetadataBuilder<T> buildBuildersByClass(final Class<T> clazz, final Primavera primavera, final ClassSet classes) {
         final PrimaveraSet<Class<?>> dependencies = ConstructorUtils.findPrimaryConstructor(clazz)
                 .map(Constructor::getParameterTypes)
                 .stream()
                 .flatMap(Arrays::stream)
+                .map(classes::findImplementation)
                 .collect(Collectors.toCollection(PrimaveraSet::new));
 
         final Component component = AnnotationUtils.findAnnotation(clazz, Component.class).orElseThrow();

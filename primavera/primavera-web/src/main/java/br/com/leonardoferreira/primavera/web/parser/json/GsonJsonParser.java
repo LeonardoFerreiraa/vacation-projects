@@ -10,7 +10,7 @@ public class GsonJsonParser implements JsonParser {
 
     private final Gson gson;
 
-    public GsonJsonParser() {
+    public GsonJsonParser(final Gson gson) {
         this.gson = new Gson();
     }
 
