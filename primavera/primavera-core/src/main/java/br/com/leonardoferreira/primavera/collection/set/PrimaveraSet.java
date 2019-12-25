@@ -21,6 +21,12 @@ public class PrimaveraSet<T> extends PrimaveraCollection<T> {
         return set;
     }
 
+    public static <T> PrimaveraSet<T> of(final Set<T> other) {
+        final PrimaveraSet<T> set = new PrimaveraSet<>();
+        set.addAll(other);
+        return set;
+    }
+
     @Override
     protected Collection<T> elements() {
         return elements;

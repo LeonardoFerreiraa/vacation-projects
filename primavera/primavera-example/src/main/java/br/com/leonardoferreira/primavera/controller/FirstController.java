@@ -5,6 +5,7 @@ import br.com.leonardoferreira.primavera.service.SecondService;
 import br.com.leonardoferreira.primavera.service.ThirdService;
 import br.com.leonardoferreira.primavera.stereotype.Controller;
 import br.com.leonardoferreira.primavera.web.exception.handler.ResponseError;
+import br.com.leonardoferreira.primavera.web.request.PathVariable;
 import br.com.leonardoferreira.primavera.web.request.RequestBody;
 import br.com.leonardoferreira.primavera.web.request.RequestParam;
 import br.com.leonardoferreira.primavera.web.request.handler.Get;
@@ -52,6 +53,11 @@ public class FirstController {
     @Get("/anything")
     public void bla() {
         throw new ResourceNotFound();
+    }
+
+    @Get("/resources/:resourceId")
+    public String findById(@PathVariable("resourceId") final Long resourceId) {
+        return resourceId.toString();
     }
 
     @ResponseError(status = HttpStatus.NOT_FOUND, message = "Resource not found!")

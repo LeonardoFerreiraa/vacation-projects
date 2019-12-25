@@ -1,7 +1,8 @@
 package br.com.leonardoferreira.primavera.web.resolver;
 
+import br.com.leonardoferreira.primavera.collection.list.PrimaveraList;
+import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerMetadata;
 import java.lang.reflect.Parameter;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -11,11 +12,12 @@ public interface MethodArgumentResolver {
 
     static Object resolve(final HttpServletRequest request,
                           final HttpServletResponse response,
+                          final RequestHandlerMetadata handler,
                           final Set<MethodArgumentResolver> resolvers,
                           final Parameter parameter) {
-        final List<MethodArgumentResolver> elected = resolvers.stream()
+        final PrimaveraList<MethodArgumentResolver> elected = resolvers.stream()
                 .filter(it -> it.canResolve(parameter))
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(PrimaveraList::new));
 
         if (elected.size() > 1) {
             throw new RuntimeException("More to one resolver to parameter");
@@ -25,11 +27,12 @@ public interface MethodArgumentResolver {
             throw new RuntimeException("No resolver found to parameter");
         }
 
-        return elected.get(0).resolve(parameter, request, response);
+        return elected.first()
+                .resolve(request, response, handler, parameter);
     }
 
     boolean canResolve(Parameter parameter);
 
-    Object resolve(final Parameter parameter, HttpServletRequest request, final HttpServletResponse response);
+    Object resolve(HttpServletRequest request, final HttpServletResponse response, final RequestHandlerMetadata handler, final Parameter parameter);
 
 }

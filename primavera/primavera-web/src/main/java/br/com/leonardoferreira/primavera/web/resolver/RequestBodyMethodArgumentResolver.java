@@ -4,6 +4,7 @@ import br.com.leonardoferreira.primavera.util.AnnotationUtils;
 import br.com.leonardoferreira.primavera.stereotype.Component;
 import br.com.leonardoferreira.primavera.web.request.RequestBody;
 import br.com.leonardoferreira.primavera.web.parser.json.JsonParser;
+import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerMetadata;
 import java.io.InputStream;
 import java.lang.reflect.Parameter;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ public class RequestBodyMethodArgumentResolver implements MethodArgumentResolver
     }
 
     @Override
-    public Object resolve(final Parameter parameter, final HttpServletRequest request, final HttpServletResponse response) {
+    public Object resolve(final HttpServletRequest request, final HttpServletResponse response, final RequestHandlerMetadata handler, final Parameter parameter) {
         try (final InputStream inputStream = request.getInputStream()) {
             return jsonParser.fromJson(inputStream, parameter.getType());
         } catch (final Exception e) {

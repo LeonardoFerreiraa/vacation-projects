@@ -53,14 +53,21 @@ public class ComponentBuilder {
             return;
         }
 
-        builders.get(clazz)
+        findBuilder(clazz)
                 .getDependencies()
                 .stream()
                 .filter(dependency -> !alreadyInserted(dependency))
                 .forEach(dependency -> buildComponent(dependency, register));
 
-        final ComponentMetadata<?> build = builders.get(clazz).build();
+        final ComponentMetadata<?> build = findBuilder(clazz).build();
         register.accept(build);
+    }
+
+    private ComponentMetadataBuilder<?> findBuilder(final Class<?> clazz) {
+        return PrimaveraSet.of(builders.keySet())
+                .find(clazz::isAssignableFrom)
+                .map(builders::get)
+                .orElseThrow();
     }
 
     private boolean alreadyInserted(final Class<?> dependency) {
