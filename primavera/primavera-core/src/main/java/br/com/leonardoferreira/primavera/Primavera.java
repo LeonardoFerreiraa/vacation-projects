@@ -7,7 +7,9 @@ import java.util.Set;
 
 public interface Primavera {
 
-    void run();
+    default void run() {
+
+    }
 
     void scan(final Class<?> baseClass);
 

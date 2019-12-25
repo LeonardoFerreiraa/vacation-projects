@@ -14,57 +14,33 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import javassist.bytecode.ClassFile;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-class JarClasspathScanner implements ClasspathScanner {
-
-    private final ClassLoader classLoader;
-
-    private final String packageName;
+class JarClassScanner implements ClassScanner {
 
     @Override
-    public Set<Class<?>> scan() {
-        try {
-            return Collections.list(classLoader.getResources(packageName.replaceAll("\\.", "/")))
-                    .stream()
-                    .map(this::findClassesByUrl)
-                    .flatMap(Set::stream)
-                    .collect(Collectors.toSet());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Set<Class<?>> findClassesByUrl(final URL url) {
-        try {
+    public Set<Class<?>> scan(final URL url, final String packageName) {
+        return ExceptionUtils.rethrowAsRuntime(() -> {
             final URLConnection urlConnection = url.openConnection();
             try (final JarFile jarFile = ((JarURLConnection) urlConnection).getJarFile()) {
                 return Collections.list(jarFile.entries())
                         .stream()
                         .filter(jarEntry -> jarEntry.getRealName().endsWith(".class"))
                         .map(jarEntry -> createClassFile(jarFile, jarEntry))
-                        .map(this::classFileToClass)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
 
-    private Class<?> classFileToClass(final ClassFile classFile) {
-        return ExceptionUtils.silence(() -> Class.forName(classFile.getName()));
-    }
-
-    private ClassFile createClassFile(final JarFile jarFile, final JarEntry jarEntry) {
+    private Class<?> createClassFile(final JarFile jarFile, final JarEntry jarEntry) {
         try (
                 final InputStream inputStream = jarFile.getInputStream(jarEntry);
                 final DataInputStream dis = new DataInputStream(new BufferedInputStream(inputStream))
         ) {
-            return new ClassFile(dis);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            final ClassFile classFile = new ClassFile(dis);
+            return Class.forName(classFile.getName());
+        } catch (Exception | NoClassDefFoundError e) {
+            return null;
         }
     }
 

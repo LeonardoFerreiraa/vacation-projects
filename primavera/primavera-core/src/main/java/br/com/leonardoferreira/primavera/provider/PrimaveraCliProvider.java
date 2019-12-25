@@ -5,11 +5,6 @@ import br.com.leonardoferreira.primavera.PrimaveraType;
 public class PrimaveraCliProvider extends PrimaveraProvider {
 
     @Override
-    public void run() {
-
-    }
-
-    @Override
     public PrimaveraType type() {
         return PrimaveraType.CLI;
     }
