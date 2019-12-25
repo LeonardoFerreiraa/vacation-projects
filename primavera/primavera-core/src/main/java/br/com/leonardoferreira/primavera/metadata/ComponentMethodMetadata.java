@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ComponentMethodMetaData {
+public class ComponentMethodMetadata {
 
     private final Object instance;
 

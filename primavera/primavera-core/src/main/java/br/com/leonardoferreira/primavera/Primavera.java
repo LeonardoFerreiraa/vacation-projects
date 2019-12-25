@@ -7,8 +7,6 @@ import java.util.Set;
 
 public interface Primavera {
 
-    <T> T retrieveComponent(final Class<T> clazz);
-
     void run();
 
     void scan(final Class<?> baseClass);
@@ -16,6 +14,8 @@ public interface Primavera {
     PrimaveraType type();
 
     ComponentSet components();
+
+    <T> T retrieveComponent(final Class<T> clazz);
 
     <T> Set<T> retrieveComponents(Class<T> clazz);
 

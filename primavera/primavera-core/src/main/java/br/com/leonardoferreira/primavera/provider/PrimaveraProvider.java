@@ -4,7 +4,7 @@ import br.com.leonardoferreira.primavera.Primavera;
 import br.com.leonardoferreira.primavera.collection.set.ClassSet;
 import br.com.leonardoferreira.primavera.collection.set.ComponentSet;
 import br.com.leonardoferreira.primavera.component.ComponentBuilder;
-import br.com.leonardoferreira.primavera.metadata.ComponentMetaData;
+import br.com.leonardoferreira.primavera.metadata.ComponentMetadata;
 import br.com.leonardoferreira.primavera.scanner.ClasspathScanner;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -21,14 +21,14 @@ public abstract class PrimaveraProvider implements Primavera {
     public void scan(final Class<?> baseClass) {
         classes.addAll(ClasspathScanner.scan(baseClass));
 
-        ComponentBuilder.forEach(classes, this)
-                .register(this::registerComponent);
+        ComponentBuilder.createBuilders(classes, this)
+                .buildEach(this::registerComponent);
     }
 
     @Override
     public <T> T retrieveComponent(final Class<T> clazz) {
         return Optional.ofNullable(components.findByType(clazz))
-                .map(ComponentMetaData::getInstance)
+                .map(ComponentMetadata::getInstance)
                 .orElseThrow(() -> new NoSuchElementException("component not found " + clazz));
     }
 
@@ -42,17 +42,14 @@ public abstract class PrimaveraProvider implements Primavera {
     public <T> Set<T> retrieveComponents(final Class<T> clazz) {
         return (Set<T>) components.stream()
                 .filter(it -> clazz.isAssignableFrom(it.getType()))
-                .map(ComponentMetaData::getInstance)
+                .map(ComponentMetadata::getInstance)
                 .collect(Collectors.toSet());
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T> T registerComponent(final ComponentMetaData<T> componentMetaData) {
-        if (components.contains(componentMetaData)) {
-            return retrieveComponent(componentMetaData.getType());
+    protected <T> void registerComponent(final ComponentMetadata<T> componentMetaData) {
+        if (!components.contains(componentMetaData)) {
+            components.add(componentMetaData);
         }
-
-        return (T) components.addAndReturn(componentMetaData).getInstance();
     }
 
 }

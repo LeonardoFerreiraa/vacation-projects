@@ -10,11 +10,6 @@ public abstract class PrimaveraCollection<T> implements Iterable<T>, Collection<
 
     protected abstract Collection<T> elements();
 
-    public T addAndReturn(final T element) {
-        elements().add(element);
-        return element;
-    }
-
     public Optional<T> find(final Predicate<T> predicate) {
         return Optional.ofNullable(findFirst(predicate));
     }
