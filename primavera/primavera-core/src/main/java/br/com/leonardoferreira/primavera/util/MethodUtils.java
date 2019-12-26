@@ -1,22 +1,20 @@
 package br.com.leonardoferreira.primavera.util;
 
 import br.com.leonardoferreira.primavera.Primavera;
-import br.com.leonardoferreira.primavera.functional.Pair;
+import br.com.leonardoferreira.primavera.asm.ClassNode;
+import br.com.leonardoferreira.primavera.asm.MethodNode;
+import br.com.leonardoferreira.primavera.asm.ParameterNode;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.bytecode.LocalVariableAttribute;
-import javassist.bytecode.MethodInfo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.objectweb.asm.Type;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MethodUtils {
@@ -33,51 +31,29 @@ public class MethodUtils {
         });
     }
 
-    public static String retrieveParameterName(final Method method, final Parameter parameter) {
+    public static String retrieveParameterName(final Executable executable, final Parameter parameter) {
         if (parameter.isNamePresent()) {
             return parameter.getName();
         }
 
         final int parameterIndex = Integer.parseInt(parameter.getName().replace("arg", ""));
-        final List<Pair<String, Parameter>> parameters = retrieveParametersWithNames(method);
-        if (parameters.size() >= parameterIndex) {
-            return parameters.get(parameterIndex).getKey();
-        }
 
-        throw new RuntimeException("Parameter not found");
+        return Optional.ofNullable(retrieveParameterNames(executable).get(parameterIndex))
+                .orElseThrow(() -> new RuntimeException("Parameter not found"));
     }
 
-    public static List<Pair<String, Parameter>> retrieveParametersWithNames(final Method method) {
-        final CtMethod ctMethod = toCtMethod(method);
+    public static Map<Integer, String> retrieveParameterNames(final Executable executable) {
+        final String executableName = executable instanceof Constructor ? "<init>" : executable.getName();
+        final Type[] executableParams = Arrays.stream(executable.getParameterTypes())
+                .map(Type::getType)
+                .toArray(Type[]::new);
 
-        return Optional.of(ctMethod.getMethodInfo())
-                .map(MethodInfo::getCodeAttribute)
-                .map(codeAttribute -> (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag))
-                .map(attr ->
-                        Optional.ofNullable(Try.silently(ctMethod::getParameterTypes))
-                                .map(parameters -> IntStream.range(0, parameters.length))
-                                .map(stream -> stream.boxed().map(i -> Pair.of(attr.variableName(i + 1), method.getParameters()[i])))
-                                .stream()
-                                .flatMap(Function.identity())
-                                .collect(Collectors.toList())
-                )
-                .orElse(Collections.emptyList());
-    }
-
-    public static CtMethod toCtMethod(final Method method) {
-        return Optional.of(method.getDeclaringClass())
-                .map(ClassUtils::toCtClass)
-                .map(ctClass ->
-                        Try.silently(() ->
-                                ctClass.getDeclaredMethod(
-                                        method.getName(),
-                                        Arrays.stream(method.getParameterTypes())
-                                                .map(ClassUtils::toCtClass)
-                                                .toArray(CtClass[]::new)
-                                )
-                        )
-                )
-                .orElseThrow(() -> new RuntimeException("Unable to convert to CtMethod"));
+        return ClassNode.fromClass(executable.getDeclaringClass())
+                .methods()
+                .filter(method -> executableName.equals(method.getName())
+                        && Arrays.equals(executableParams, Type.getArgumentTypes(method.getDescriptor())))
+                .flatMap(MethodNode::parameters)
+                .collect(Collectors.toMap(ParameterNode::getIndex, ParameterNode::getName));
     }
 
 }
