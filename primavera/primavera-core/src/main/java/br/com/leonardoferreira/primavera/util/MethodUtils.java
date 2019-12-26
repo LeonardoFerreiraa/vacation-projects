@@ -34,19 +34,7 @@ public class MethodUtils {
     }
 
     public static List<Pair<String, Parameter>> retrieveParametersWithNames(final Method method) {
-        final CtMethod ctMethod = Optional.of(method.getDeclaringClass())
-                .map(ClassUtils::toCtClass)
-                .map(ctClass ->
-                        Try.silently(() ->
-                                ctClass.getDeclaredMethod(
-                                        method.getName(),
-                                        Arrays.stream(method.getParameterTypes())
-                                                .map(ClassUtils::toCtClass)
-                                                .toArray(CtClass[]::new)
-                                )
-                        )
-                )
-                .orElseThrow();
+        final CtMethod ctMethod = toCtMethod(method);
 
         return Optional.of(ctMethod.getMethodInfo())
                 .map(MethodInfo::getCodeAttribute)
@@ -60,6 +48,22 @@ public class MethodUtils {
                                 .collect(Collectors.toList())
                 )
                 .orElse(Collections.emptyList());
+    }
+
+    public static CtMethod toCtMethod(final Method method) {
+        return Optional.of(method.getDeclaringClass())
+                .map(ClassUtils::toCtClass)
+                .map(ctClass ->
+                        Try.silently(() ->
+                                ctClass.getDeclaredMethod(
+                                        method.getName(),
+                                        Arrays.stream(method.getParameterTypes())
+                                                .map(ClassUtils::toCtClass)
+                                                .toArray(CtClass[]::new)
+                                )
+                        )
+                )
+                .orElseThrow(() -> new RuntimeException("Unable to convert to CtMethod"));
     }
 
 }
