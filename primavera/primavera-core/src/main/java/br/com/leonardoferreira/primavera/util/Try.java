@@ -10,7 +10,7 @@ public class Try {
     public static <T> T rethrowAsRuntime(final Callable<T> callable) {
         try {
             return callable.call();
-        } catch (Exception e) {
+        } catch (final Throwable e) {
             throw new RuntimeException(e);
         }
     }
@@ -18,7 +18,7 @@ public class Try {
     public static <T> T silently(final Callable<T> callable) {
         try {
             return callable.call();
-        } catch (Exception e) {
+        } catch (final Throwable e) {
             return null;
         }
     }

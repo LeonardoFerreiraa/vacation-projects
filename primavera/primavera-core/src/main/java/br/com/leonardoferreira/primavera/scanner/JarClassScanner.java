@@ -1,6 +1,6 @@
 package br.com.leonardoferreira.primavera.scanner;
 
-import br.com.leonardoferreira.primavera.asm.ClassNode;
+import br.com.leonardoferreira.primavera.metadata.asm.ClassMetadata;
 import br.com.leonardoferreira.primavera.util.Try;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
-import org.objectweb.asm.ClassReader;
 
 class JarClassScanner implements ClassScanner {
 
@@ -38,12 +37,9 @@ class JarClassScanner implements ClassScanner {
                 final InputStream inputStream = jarFile.getInputStream(jarEntry);
                 final DataInputStream dis = new DataInputStream(new BufferedInputStream(inputStream))
         ) {
-            final ClassNode classNode = new ClassNode();
-            final ClassReader classReader = new ClassReader(dis);
-            classReader.accept(classNode, ClassReader.SKIP_FRAMES);
-
-            return Class.forName(classNode.getName());
-        } catch (Exception | NoClassDefFoundError e) {
+            final ClassMetadata classMetadata = ClassMetadata.fromInputStream(dis);
+            return classMetadata.toClass();
+        } catch (final Exception e) {
             return null;
         }
     }

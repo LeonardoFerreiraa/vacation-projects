@@ -37,8 +37,9 @@ public abstract class PrimaveraCollection<T> implements Iterable<T> {
         return elements().size();
     }
 
-    public void add(final T t) {
+    public T add(final T t) {
         elements().add(t);
+        return t;
     }
 
     public void addAll(final Collection<? extends T> c) {

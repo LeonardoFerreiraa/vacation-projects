@@ -1,11 +1,11 @@
-package br.com.leonardoferreira.primavera.asm;
+package br.com.leonardoferreira.primavera.metadata.asm;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ParameterNode {
+public class MethodParameterMetadata {
 
     private final String name;
 
