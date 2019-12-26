@@ -5,6 +5,7 @@ import br.com.leonardoferreira.primavera.collection.set.ClassSet;
 import br.com.leonardoferreira.primavera.collection.set.ComponentSet;
 import br.com.leonardoferreira.primavera.component.ComponentBuilder;
 import br.com.leonardoferreira.primavera.metadata.ComponentMetadata;
+import br.com.leonardoferreira.primavera.property.ApplicationProperties;
 import br.com.leonardoferreira.primavera.scanner.ClasspathScanner;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -16,12 +17,16 @@ public abstract class PrimaveraProvider implements Primavera {
 
     protected final ClassSet classes = new ClassSet();
 
+    protected ApplicationProperties properties;
+
     @Override
     public void scan(final Class<?> baseClass) {
         classes.addAll(ClasspathScanner.scan(baseClass));
 
         ComponentBuilder.createBuilders(classes, this)
                 .buildEach(this::registerComponent);
+
+        this.properties = ApplicationProperties.read(baseClass);
     }
 
     @Override

@@ -1,0 +1,4 @@
+datasource:
+  url: jdbc:postgresql://localhost:5432/primavera_example
+  username: s2it_leferreira
+  password: 123123

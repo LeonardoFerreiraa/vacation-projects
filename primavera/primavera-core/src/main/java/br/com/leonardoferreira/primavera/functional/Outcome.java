@@ -1,5 +1,6 @@
 package br.com.leonardoferreira.primavera.functional;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class Outcome<R, E> {
         return error != null;
     }
 
-    public static <T> Outcome<T, Throwable> from(final Callable<T> callable) {
+    public static <T> Outcome<T, Throwable> of(final Callable<T> callable) {
         try {
             return Outcome.success(callable.call());
         } catch (Exception e) {
@@ -36,4 +37,7 @@ public class Outcome<R, E> {
         }
     }
 
+    public Optional<R> toOptional() {
+        return Optional.ofNullable(getResult());
+    }
 }

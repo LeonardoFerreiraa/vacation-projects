@@ -1,6 +1,6 @@
 package br.com.leonardoferreira.primavera.scanner;
 
-import br.com.leonardoferreira.primavera.util.ExceptionUtils;
+import br.com.leonardoferreira.primavera.util.Try;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ class FileClassScanner implements ClassScanner {
         }
 
         if (file.getName().endsWith(".class")) {
-            final Class<?> clazz = ExceptionUtils.rethrowAsRuntime(() ->
+            final Class<?> clazz = Try.rethrowAsRuntime(() ->
                     Class.forName(completeQualifier(packageName, file)));
             return Set.of(clazz);
         }

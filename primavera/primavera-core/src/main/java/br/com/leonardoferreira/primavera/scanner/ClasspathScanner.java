@@ -1,6 +1,6 @@
 package br.com.leonardoferreira.primavera.scanner;
 
-import br.com.leonardoferreira.primavera.util.ExceptionUtils;
+import br.com.leonardoferreira.primavera.util.Try;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ public class ClasspathScanner {
     }
 
     private static Set<Class<?>> scan(final ClassLoader classLoader, final String packageName) {
-        return ExceptionUtils.silence(() ->
+        return Try.silently(() ->
                 Collections.list(classLoader.getResources(packageName.replaceAll("\\.", "/")))
                         .stream()
                         .map(url ->

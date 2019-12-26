@@ -1,6 +1,6 @@
 package br.com.leonardoferreira.primavera.scanner;
 
-import br.com.leonardoferreira.primavera.util.ExceptionUtils;
+import br.com.leonardoferreira.primavera.util.Try;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ class JarClassScanner implements ClassScanner {
 
     @Override
     public Set<Class<?>> scan(final URL url, final String packageName) {
-        return ExceptionUtils.rethrowAsRuntime(() -> {
+        return Try.rethrowAsRuntime(() -> {
             final URLConnection urlConnection = url.openConnection();
             try (final JarFile jarFile = ((JarURLConnection) urlConnection).getJarFile()) {
                 return Collections.list(jarFile.entries())

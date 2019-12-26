@@ -28,7 +28,6 @@ public class FirstController {
     public FirstController(final FirstService firstService,
                            final SecondService secondService,
                            final ThirdService thirdService) {
-        System.out.println("firstController");
         this.firstService = firstService;
         this.secondService = secondService;
         this.thirdService = thirdService;

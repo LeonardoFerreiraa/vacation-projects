@@ -2,7 +2,7 @@ package br.com.leonardoferreira.primavera.component;
 
 import br.com.leonardoferreira.primavera.collection.set.PrimaveraSet;
 import br.com.leonardoferreira.primavera.metadata.ComponentMetadata;
-import br.com.leonardoferreira.primavera.util.ExceptionUtils;
+import br.com.leonardoferreira.primavera.util.Try;
 import java.util.concurrent.Callable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,7 +39,7 @@ public class ComponentMetadataBuilder<T> implements Comparable<ComponentMetadata
         return new ComponentMetadata<>(
                 name,
                 type,
-                ExceptionUtils.rethrowAsRuntime(instanceCreator)
+                Try.rethrowAsRuntime(instanceCreator)
         );
     }
 }

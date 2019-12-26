@@ -83,7 +83,7 @@ public class ComponentBuilder {
         return new ComponentMetadataBuilder<>(
                 BeanUtils.beanName(componentType, component),
                 componentType,
-                () -> MethodUtils.invokeWithComponents(clazz, method, primavera),
+                () -> MethodUtils.invokeWithComponents(method, primavera),
                 dependencies
         );
     }

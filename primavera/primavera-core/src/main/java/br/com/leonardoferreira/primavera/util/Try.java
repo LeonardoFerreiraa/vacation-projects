@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ExceptionUtils {
+public class Try {
 
     public static <T> T rethrowAsRuntime(final Callable<T> callable) {
         try {
@@ -15,7 +15,7 @@ public class ExceptionUtils {
         }
     }
 
-    public static <T> T silence(final Callable<T> callable) {
+    public static <T> T silently(final Callable<T> callable) {
         try {
             return callable.call();
         } catch (Exception e) {

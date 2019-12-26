@@ -3,7 +3,7 @@ package br.com.leonardoferreira.primavera.proxy;
 import br.com.leonardoferreira.primavera.annotation.AliasFor;
 import br.com.leonardoferreira.primavera.functional.Pair;
 import br.com.leonardoferreira.primavera.util.AnnotationUtils;
-import br.com.leonardoferreira.primavera.util.ExceptionUtils;
+import br.com.leonardoferreira.primavera.util.Try;
 import br.com.leonardoferreira.primavera.util.MapUtils;
 import br.com.leonardoferreira.primavera.util.ProxyUtil;
 import java.lang.annotation.Annotation;
@@ -41,11 +41,11 @@ public class AnnotationProxy implements InvocationHandler {
         final Map<String, Object> aliasMethods = Stream.of(annotationFound.getKey().getDeclaredMethods())
                 .map(method -> retrieveAliasFor(method, requestedAnnotation.getKey()))
                 .filter(Objects::nonNull)
-                .map(pair -> ExceptionUtils.rethrowAsRuntime(() -> Pair.of(pair.getKey(), pair.getValue().invoke(annotationFound.getValue()))))
+                .map(pair -> Try.rethrowAsRuntime(() -> Pair.of(pair.getKey(), pair.getValue().invoke(annotationFound.getValue()))))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
         final Map<String, Object> methods = Stream.of(requestedAnnotation.getKey().getDeclaredMethods())
-                .map(method -> ExceptionUtils.rethrowAsRuntime(() -> Pair.of(method.getName(), method.invoke(requestedAnnotation.getValue()))))
+                .map(method -> Try.rethrowAsRuntime(() -> Pair.of(method.getName(), method.invoke(requestedAnnotation.getValue()))))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
         return MapUtils.join(methods, aliasMethods);

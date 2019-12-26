@@ -48,7 +48,7 @@ public class RequestHandlerMetadata {
     public Outcome<Object, Throwable> handle(final HttpServletRequest request,
                                              final HttpServletResponse response,
                                              final Set<MethodArgumentResolver> resolvers) {
-        return Outcome.from(() -> {
+        return Outcome.of(() -> {
             final Object[] args = Arrays.stream(method.getParameters())
                     .map(parameter -> MethodArgumentResolver.resolve(request, response, this, resolvers, parameter))
                     .toArray();

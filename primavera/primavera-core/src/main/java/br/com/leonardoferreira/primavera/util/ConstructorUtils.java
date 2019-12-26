@@ -27,7 +27,7 @@ public class ConstructorUtils {
     @SuppressWarnings("unchecked")
     public static <T> T primaryConstructorInstanceCreator(final Class<T> clazz, final Primavera primavera) {
         return (T) ConstructorUtils.findPrimaryConstructor(clazz)
-                .map(constructor -> ExceptionUtils.silence(() -> createInstance(constructor, primavera)))
+                .map(constructor -> Try.silently(() -> createInstance(constructor, primavera)))
                 .orElseThrow(() -> new RuntimeException("constructor not found for type " + clazz));
     }
 
