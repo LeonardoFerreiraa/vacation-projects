@@ -2,6 +2,8 @@ package br.com.leonardoferreira.primavera.web.resolver;
 
 import br.com.leonardoferreira.primavera.stereotype.Component;
 import br.com.leonardoferreira.primavera.util.AnnotationUtils;
+import br.com.leonardoferreira.primavera.util.MethodUtils;
+import br.com.leonardoferreira.primavera.util.StringUtils;
 import br.com.leonardoferreira.primavera.web.parser.requestvariable.RequestVariableParser;
 import br.com.leonardoferreira.primavera.web.request.PathVariable;
 import br.com.leonardoferreira.primavera.web.request.handler.RequestHandlerMetadata;
@@ -26,10 +28,20 @@ public class PathVariableMethodArgumentResolver implements MethodArgumentResolve
         final PathVariable pathVariable = AnnotationUtils.findAnnotation(parameter, PathVariable.class)
                 .orElseThrow();
 
+        final String pathVariableName = retrievePathVariableName(pathVariable, handler, parameter);
+
         return Optional.of(handler.getPath())
-                .map(path -> path.pathVariable(pathVariable.value(), request.getPathInfo()))
+                .map(path -> path.pathVariable(pathVariableName, request.getPathInfo()))
                 .map(value -> RequestVariableParser.parse(parameter.getType(), value))
                 .orElseThrow();
+    }
+
+    private String retrievePathVariableName(final PathVariable pathVariable, final RequestHandlerMetadata handler, final Parameter parameter) {
+        if (StringUtils.isBlank(pathVariable.value())) {
+            return MethodUtils.retrieveParameterName(handler.getMethod(), parameter);
+        }
+
+        return pathVariable.value();
     }
 
 }

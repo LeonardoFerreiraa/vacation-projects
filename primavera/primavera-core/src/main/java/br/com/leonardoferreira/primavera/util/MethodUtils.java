@@ -33,6 +33,20 @@ public class MethodUtils {
         });
     }
 
+    public static String retrieveParameterName(final Method method, final Parameter parameter) {
+        if (parameter.isNamePresent()) {
+            return parameter.getName();
+        }
+
+        final int parameterIndex = Integer.parseInt(parameter.getName().replace("arg", ""));
+        final List<Pair<String, Parameter>> parameters = retrieveParametersWithNames(method);
+        if (parameters.size() >= parameterIndex) {
+            return parameters.get(parameterIndex).getKey();
+        }
+
+        throw new RuntimeException("Parameter not found");
+    }
+
     public static List<Pair<String, Parameter>> retrieveParametersWithNames(final Method method) {
         final CtMethod ctMethod = toCtMethod(method);
 

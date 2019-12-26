@@ -39,7 +39,7 @@ public class FirstController {
     }
 
     @Get("/greetings")
-    public Greeting index(@RequestParam("name") String name, @RequestParam("times") Long times) {
+    public Greeting index(@RequestParam final String name, @RequestParam final Long times) {
         return new Greeting("hello " + name + " " + times + " times");
     }
 
@@ -55,7 +55,7 @@ public class FirstController {
     }
 
     @Get("/resources/:resourceId")
-    public String findById(@PathVariable("resourceId") final Long resourceId) {
+    public String findById(@PathVariable final Long resourceId) {
         return resourceId.toString();
     }
 
