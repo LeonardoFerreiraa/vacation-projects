@@ -39,7 +39,7 @@ public class ComponentMetadataBuilder<T> implements Comparable<ComponentMetadata
         return new ComponentMetadata<>(
                 name,
                 type,
-                Try.rethrowAsRuntime(instanceCreator)
+                Try.uncheck(instanceCreator)
         );
     }
 }

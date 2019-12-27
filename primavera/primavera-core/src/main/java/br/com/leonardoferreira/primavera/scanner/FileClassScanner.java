@@ -37,7 +37,7 @@ class FileClassScanner implements ClassScanner {
         }
 
         if (file.getName().endsWith(".class")) {
-            final Class<?> clazz = Try.rethrowAsRuntime(() ->
+            final Class<?> clazz = Try.uncheck(() ->
                     Class.forName(completeQualifier(packageName, file)));
             return Set.of(clazz);
         }

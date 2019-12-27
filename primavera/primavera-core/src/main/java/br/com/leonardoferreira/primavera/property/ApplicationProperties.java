@@ -27,7 +27,7 @@ public class ApplicationProperties {
             return new ApplicationProperties(Collections.emptyMap());
         }
 
-        return Try.rethrowAsRuntime(() -> {
+        return Try.uncheck(() -> {
             final URLConnection urlConnection = resource.openConnection();
             try (final InputStream is = urlConnection.getInputStream()) {
                 final Yaml yaml = new Yaml();

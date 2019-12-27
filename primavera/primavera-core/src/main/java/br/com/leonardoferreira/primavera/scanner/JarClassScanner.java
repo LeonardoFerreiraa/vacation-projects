@@ -19,7 +19,7 @@ class JarClassScanner implements ClassScanner {
 
     @Override
     public Set<Class<?>> scan(final URL url, final String packageName) {
-        return Try.rethrowAsRuntime(() -> {
+        return Try.uncheck(() -> {
             final URLConnection urlConnection = url.openConnection();
             try (final JarFile jarFile = ((JarURLConnection) urlConnection).getJarFile()) {
                 return Collections.list(jarFile.entries())
