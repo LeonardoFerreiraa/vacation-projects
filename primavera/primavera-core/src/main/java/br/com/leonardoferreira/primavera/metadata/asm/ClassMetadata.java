@@ -39,7 +39,7 @@ public class ClassMetadata extends ClassVisitor {
             reader.accept(classMetadata, ClassReader.SKIP_FRAMES);
 
             return classMetadata;
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             throw new RuntimeException("Unable to convert to ClassMetadata", e);
         }
     }
