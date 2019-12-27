@@ -17,6 +17,7 @@
         <module>primavera-core</module>
         <module>primavera-web</module>
         <module>primavera-example</module>
+        <module>primavera-jpa</module>
     </modules>
 
     <dependencies>
