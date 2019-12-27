@@ -41,11 +41,11 @@ public class AnnotationProxy implements InvocationHandler {
         final Map<String, Object> aliasMethods = Stream.of(annotationFound.getKey().getDeclaredMethods())
                 .map(method -> retrieveAliasFor(method, requestedAnnotation.getKey()))
                 .filter(Objects::nonNull)
-                .map(pair -> Try.uncheck(() -> Pair.of(pair.getKey(), pair.getValue().invoke(annotationFound.getValue()))))
+                .map(pair -> Try.shrug(() -> Pair.of(pair.getKey(), pair.getValue().invoke(annotationFound.getValue()))))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
         final Map<String, Object> methods = Stream.of(requestedAnnotation.getKey().getDeclaredMethods())
-                .map(method -> Try.uncheck(() -> Pair.of(method.getName(), method.invoke(requestedAnnotation.getValue()))))
+                .map(method -> Try.shrug(() -> Pair.of(method.getName(), method.invoke(requestedAnnotation.getValue()))))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
         return MapUtils.join(methods, aliasMethods);

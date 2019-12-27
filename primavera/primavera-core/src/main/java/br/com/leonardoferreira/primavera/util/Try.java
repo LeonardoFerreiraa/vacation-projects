@@ -9,7 +9,7 @@ import lombok.SneakyThrows;
 public class Try {
 
     @SneakyThrows
-    public static <T> T uncheck(final Callable<T> callable) {
+    public static <T> T shrug(final Callable<T> callable) {
         return callable.call();
     }
 

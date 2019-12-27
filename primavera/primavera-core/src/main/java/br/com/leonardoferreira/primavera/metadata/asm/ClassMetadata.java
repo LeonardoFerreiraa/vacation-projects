@@ -25,8 +25,8 @@ public class ClassMetadata extends ClassVisitor {
                 .map(classLoader -> classLoader.getResource(clazz.getName()
                         .replaceAll("\\.", "/")
                         .concat(".class")))
-                .map(resource -> Try.uncheck(resource::openConnection))
-                .map(collection -> Try.uncheck(collection::getInputStream))
+                .map(resource -> Try.shrug(resource::openConnection))
+                .map(collection -> Try.shrug(collection::getInputStream))
                 .map(ClassMetadata::fromInputStream)
                 .orElseThrow();
     }
@@ -46,7 +46,7 @@ public class ClassMetadata extends ClassVisitor {
 
     @Override
     public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] interfaces) {
-        this.targetClass = Try.uncheck(() -> Class.forName(name.replaceAll("/", ".")));
+        this.targetClass = Try.shrug(() -> Class.forName(name.replaceAll("/", ".")));
     }
 
     @Override

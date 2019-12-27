@@ -19,7 +19,7 @@ public class MethodUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> T invokeWithComponents(final Method method, final Primavera primavera) {
-        return Try.uncheck(() -> {
+        return Try.shrug(() -> {
             final Object[] args = Arrays.stream(method.getParameterTypes())
                     .map(primavera::retrieveComponent)
                     .toArray();
