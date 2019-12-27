@@ -2,7 +2,6 @@ package br.com.leonardoferreira.primavera.metadata.asm;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,15 +33,8 @@ public class NativeMethodMetadata {
         return this.name.equals(name) && Arrays.equals(this.parameterTypes, parameterTypes);
     }
 
-    public boolean matches(final NativeMethodMetadata nativeMethod) {
-        return equals(nativeMethod);
-    }
-
     public boolean matches(final MethodMetadata methodMetadata) {
-        return matches(methodMetadata.getNativeMethod());
+        return matches(methodMetadata.getName(), methodMetadata.getParameterTypes());
     }
 
-    public boolean isStatic() {
-        return Modifier.isStatic(executable.getModifiers());
-    }
 }

@@ -1,5 +1,7 @@
 package br.com.leonardoferreira.primavera.metadata.asm;
 
+import java.lang.reflect.Executable;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,7 +16,14 @@ public class NativeParameterMetadata {
     }
 
     public Integer getIndex() {
-        return parameter.isNamePresent() ? null : Integer.parseInt(parameter.getName().replace("arg", ""));
+        if (parameter.isNamePresent()) {
+            return null;
+        }
+
+        final int parameterIndex = Integer.parseInt(parameter.getName().replace("arg", ""));
+        final Executable executable = parameter.getDeclaringExecutable();
+
+        return Modifier.isStatic(executable.getModifiers()) ? parameterIndex : parameterIndex + 1;
     }
 
     public String getName() {
